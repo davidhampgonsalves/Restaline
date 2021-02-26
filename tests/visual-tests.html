@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Visual Tests</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <meta content="utf-8" http-equiv="encoding" />
+
+    <script src="../node_modules/paper/dist/paper-core.js"></script>
+
+    <script>
+      const svgSquares =
+        ' <?xml version="1.0" encoding="UTF-8" standalone="no"?> <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> <svg width="100%" height="100%" viewBox="0 0 600 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"> <g transform="matrix(1.48926,0,0,2.41383,-305.946,-614.034)"> <rect x="299.289" y="314.613" width="306.237" height="186.04" style="fill:rgb(176,219,169);"/> </g> <g transform="matrix(3.29549,0,0,5.53612,-706.322,-1106.49)"> <rect x="216.02" y="200.625" width="138.391" height="81.116" style="fill:rgb(237,115,115);"/> </g> </svg> ';
+      const svgComplex =
+        '<?xml version="1.0" encoding="UTF-8" standalone="no"?> <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> <svg width="100%" height="100%" viewBox="0 0 620 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"> <g transform="matrix(1.5599,0,0,1.61083,-338.753,-218.91)"> <rect x="299.289" y="314.613" width="306.237" height="186.04" style="fill:rgb(176,219,169);"/> </g> <g transform="matrix(2.11392,0,0,2.11392,-637.381,-267.346)"> <path d="M410.876,129.543L517.491,362.635L304.262,362.635L410.876,129.543Z" style="fill:rgb(52,52,229);"/> </g> <g transform="matrix(0.494053,0,0,2.11392,85.6411,-211.424)"> <rect x="216.02" y="200.625" width="138.391" height="81.116" style="fill:rgb(237,115,115);"/> </g> <g transform="matrix(1.03356,0,0,0.0161591,-23.0494,166.412)"> <g transform="matrix(2.11392,0,0,2.11392,-365.044,-3648.94)"> <rect x="216.02" y="200.625" width="138.391" height="81.116" style="fill:rgb(227,52,229);"/> </g> <g transform="matrix(2.04528,0,0,130.819,-501.977,-25418.8)"> <path d="M262.8,218.238C262.8,218.238 356.387,249.95 396.767,302.488C436.16,353.741 512.886,241.577 512.886,241.577" style="fill:none;stroke:black;stroke-width:1px;"/> </g> </g> <g transform="matrix(1.84616,0,0,2.11392,-474.734,-244.975)"> <ellipse cx="444.76" cy="281.053" rx="74.233" ry="66.374" style="fill:rgb(227,52,229);"/> </g> <g transform="matrix(2.11392,0,0,2.11392,-541.873,-244.334)"> <ellipse cx="403.379" cy="263.173" rx="16.3" ry="16.539" style="fill:rgb(229,223,52);"/> </g> </svg>';
+      const svgCircle =
+        '<?xml version="1.0" encoding="UTF-8" standalone="no"?> <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> <svg width="100%" height="100%" viewBox="0 0 600 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"> <g transform="matrix(1.48926,0,0,2.41383,-305.946,-614.034)"> <g transform="matrix(0.671474,0,0,0.414279,159.415,225.552)"> <ellipse cx="263.011" cy="267.354" rx="188.672" ry="188.633" style="fill:rgb(255,137,137);"/> </g> <g transform="matrix(0.671474,0,0,0.414279,299.373,310.718)"> <ellipse cx="263.011" cy="267.354" rx="188.672" ry="188.633" style="fill:rgb(155,255,142);"/> </g> <g transform="matrix(0.671474,0,0,0.414279,192.213,265.586)"> <ellipse cx="222.865" cy="367.239" rx="86.155" ry="83.155" style="fill:rgb(122,118,255);"/> </g> </g> </svg> ';
+      const svgInnerCircle =
+        '<?xml version="1.0" encoding="UTF-8" standalone="no"?> <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> <svg width="100%" height="100%" viewBox="0 0 620 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"> <g transform="matrix(1.14574,0,0,1.272,-192.148,-80.9175)"> <g> <g transform="matrix(3.46582,0,0,3.46582,-1102.98,-674.616)"> <ellipse cx="444.76" cy="281.053" rx="74.233" ry="66.374" style="fill:rgb(227,52,229);"/> </g> <g transform="matrix(1.87732,0,0,1.63952,-206.177,-273.273)"> <path d="M206.132,380.577C206.132,380.577 276.927,244.947 455.978,259.79" style="fill:none;stroke:black;stroke-width:0.47px;"/> </g> <g transform="matrix(1.87732,0,0,1.63952,-199.957,-364.847)"> <path d="M381.063,405.779L413.717,428.931L397.39,450.86L423.808,459.236L411.335,496.696L384.918,488.319L384.918,515.426L344.556,515.426L344.556,488.319L318.138,496.696L305.666,459.236L332.083,450.86L315.756,428.931L348.41,405.779L364.737,427.708L381.063,405.779Z" style="fill:rgb(235,235,235);"/> </g> <g transform="matrix(3.9685,0,0,3.46582,-1229.02,-673.565)"> <ellipse cx="403.379" cy="263.173" rx="16.3" ry="16.539" style="fill:rgb(229,223,52);"/> </g> </g> </g> </svg>';
+      const svgGreyCircle =
+        '<?xml version="1.0" encoding="UTF-8" standalone="no"?> <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> <svg width="100%" height="100%" viewBox="0 0 600 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"> <g transform="matrix(1.75325,1.75179,-2.02638,2.02807,490.128,-673.263)"> <ellipse cx="159.647" cy="286.791" rx="56.487" ry="48.833" style="fill:rgb(197,197,197);"/> </g> <g transform="matrix(1.75325,1.75179,-2.02638,2.02807,600.561,-562.922)"> <ellipse cx="159.647" cy="286.791" rx="56.487" ry="48.833" style="fill:rgb(150,150,150);"/> </g> <g transform="matrix(1.75325,1.75179,-2.02638,2.02807,713.026,-450.55)"> <ellipse cx="159.647" cy="286.791" rx="56.487" ry="48.833" style="fill:rgb(83,83,83);"/> </g> </svg> ';
+      const svgJustCircle =
+        '<?xml version="1.0" encoding="UTF-8" standalone="no"?> <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> <svg width="100%" height="100%" viewBox="0 0 620 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"> <g transform="matrix(1.30789,0,0,1.34227,-100.674,-99.6816)"> <ellipse cx="316.038" cy="299.869" rx="191.147" ry="186.252" style="fill:rgb(255,179,179);"/> </g> </svg> ';
+      const svgCresent =
+        '<?xml version="1.0" encoding="UTF-8" standalone="no"?> <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> <svg width="100%" height="100%" viewBox="0 0 300 150" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"> <g> <g> <g> <path d="M100.139,49.856C127.465,36.182 171.786,36.173 199.134,49.835C209.577,55.052 216.035,61.508 218.507,68.257C196.65,66.265 173.264,69.496 156.372,77.949C139.48,86.402 133.037,98.098 137.04,109.025C123.539,107.794 110.622,104.571 100.18,99.354C72.832,85.691 72.814,63.53 100.139,49.856Z" style="fill-opacity:0.1;stroke:black;stroke-width:1px;"/> </g> </g> </g> </svg> ';
+    </script>
+
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        background: aliceblue;
+        margin: 2em;
+      }
+
+      canvas {
+        margin: 1em;
+        width: 100%;
+        height: 50em;
+      }
+    </style>
+
+    <script type="module">
+      import { occult, fill } from "../main.mjs";
+
+      window.onload = function () {
+        [
+          // svgJustCircle,
+          // svgGreyCircle,
+          // svgInnerCircle,
+          // svgSquares,
+          svgComplex,
+          // svgCircle,
+          // svgCresent,
+        ].forEach(test);
+      };
+
+      function test(svgString) {
+        const container = document.createElement("div");
+        const fillCanvas = document.createElement("canvas");
+        const occultCanvas = document.createElement("canvas");
+        container.append(fillCanvas, occultCanvas);
+        document.body.appendChild(container);
+
+        paper.setup(fillCanvas);
+        paper.project.importSVG(svgString, {
+          expandShapes: true,
+          onLoad: (item) => {
+            item.children[0].remove(); // remove parent rectangle that paper.js creates
+            const paths = occult(item);
+            fill(paths);
+            paper.view.draw();
+          },
+          onError: console.error,
+        });
+
+        // paper.setup(occultCanvas);
+        // paper.project.importSVG(svgString, {
+        //   expandShapes: true,
+        //   onLoad: (item) => {
+        //     item.children[0].remove(); // remove parent rectangle that paper.js creates
+        //     occult(item);
+        //     paper.view.draw();
+        //   },
+        //   onError: console.error,
+        // });
+
+        const link = document.createElement("a");
+        link.innerText = "Save As...";
+        link.href =
+          "data:image/svg+xml;charset=utf-8," +
+          encodeURIComponent(paper.project.exportSVG({ asString: true }));
+        container.appendChild(link);
+      }
+    </script>
+  </head>
+  <body>
+    <div>
+      <h1>Plotter Fill Visual Tests</h1>
+      <a href="index.html">unit tests</a>
+    </div>
+  </body>
+</html>
