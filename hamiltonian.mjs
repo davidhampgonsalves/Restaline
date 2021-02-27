@@ -167,7 +167,7 @@ export function getStartNodeID(ids) {
   return start;
 }
 
-export function drawPath(points, paths) {
+export function drawPath(points, paths, color = "black") {
   const curves = {};
   paths.forEach((p) => {
     p.curves.forEach(
@@ -175,6 +175,7 @@ export function drawPath(points, paths) {
     );
   });
   const path = new paper.Path();
+  path.strokeColor = color;
   path.closed = false;
 
   for (let i = 1; i < points.length; i++) {
@@ -196,41 +197,6 @@ export function drawPath(points, paths) {
 
     path.add(...segments);
   }
-
-  // export function drawPath(points, paths) {
-  //   const curves = {};
-  //   paths.forEach((p) => {
-  //     p.curves.forEach(
-  //       (c) => (curves[segToID(c.segment1) + "-" + segToID(c.segment2)] = c)
-  //     );
-  //   });
-  //   const path = new paper.Path();
-  //   path.closed = false;
-
-  //   for (let i = 1; i < points.length; i++) {
-  //     const pt1 = points[i - 1],
-  //       pt2 = points[i];
-  //     const id1 = idToXY(pt1),
-  //       id2 = idToXY(pt2);
-
-  //     let curve = curves[id1 + "-" + id2];
-  //     let segments;
-  //     if (!curve) {
-  //       curve = curves[id2 + "-" + id1];
-  //       segments = [curve.segment2, curve.segment1];
-  //     } else segments = [curve.segment1, curve.segment2];
-  //     segments = segments.map((s) => s.clone());
-  //     segments[0].handleIn = null;
-  //     segments[1].handleOut = null;
-
-  //     path.add(...segments);
-  //   }
-
-  path.strokeColor = new paper.Color(
-    Math.random(),
-    Math.random(),
-    Math.random()
-  );
 }
 
 export function idToXY(id) {

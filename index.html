@@ -39,7 +39,7 @@
     </style>
 
     <script type="module">
-      import { occult, fill } from "./main.mjs";
+      import { occultAndFill } from "./main.mjs";
 
       window.onload = function () {
         const input = document.getElementById("upload");
@@ -72,14 +72,9 @@
                 paper.setup(canvas);
                 const item = paper.project.importSVG(svg);
 
-                item.children[0].remove(); // remove parent rectangle that paper.js creates
-                console.log("occulting");
-                const paths = occult(item);
-                console.log("filling");
-                fill(paths);
-                console.log("done");
+                occultAndFill(item);
 
-                paper.view.draw();
+                console.log("done");
 
                 mock.innerHTML = "";
               };
