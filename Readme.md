@@ -3,6 +3,8 @@
 ## TODO
 * pass in options
 * inset fills
+* fills should be lower then unclosed lines and initial paths
+* should unclosed lines be occulted by closed shapes?
 
 ## Development
 `python3 -m http.server 8000`

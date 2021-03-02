@@ -1,14 +1,8 @@
-import {
-  idToXY,
-  segToID,
-  pathsToGraph,
-  generateFillPath,
-} from "../hamiltonian.mjs";
+import { idToXY, segToID, pathsToGraph } from "../src/utils.mjs";
 import { assertEq, buildPaths } from "./utils.mjs";
 
-export function run() {
+export default function run() {
   testPathsToGraph();
-  testGenerateFillPath();
 
   assertEq(segToID({ point: { x: 1, y: 2 } }), "1,2");
   assertEq(idToXY("1,2"), [1, 2]);
@@ -44,24 +38,4 @@ function testPathsToGraph() {
   let paths = buildPaths(pathData);
   graph = pathsToGraph(paths);
   assertEq(Object.keys(graph).length, 28);
-}
-
-export function testGenerateFillPath() {
-  const graph = {
-    "0,0": { "1,1": 1 },
-    "1,1": { "0,0": 1 },
-  };
-  let path = generateFillPath("1,1", graph);
-  assertEq(path, ["1,1", "0,0"]);
-
-  path = generateFillPath("0,0", graph);
-  assertEq(path, ["0,0", "1,1"]);
-
-  const threePtGraph = {
-    "0,0": { "1,0": 1, "0,1": 1 },
-    "1,0": { "0,0": 1, "0,1": 1 },
-    "0,1": { "0,0": 1, "1,0": 1 },
-  };
-  path = generateFillPath("0,0", threePtGraph);
-  assertEq(path, ["0,0", "1,0", "0,1"]);
 }

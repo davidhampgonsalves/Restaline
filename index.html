@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Plotter Fills</title>
+    <title>Restaline - Vector Fills for Pen Plotters</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <meta content="utf-8" http-equiv="encoding" />
 
     <script src="./node_modules/paper/dist/paper-core.js"></script>
+    <script src="../node_modules/paperjs-offset/dist/paperjs-offset.min.js"></script>
 
     <script>
       const svgSquares =
@@ -39,7 +40,7 @@
     </style>
 
     <script type="module">
-      import { occultAndFill } from "./main.mjs";
+      import { occultAndFill } from "./src/main.mjs";
 
       window.onload = function () {
         const input = document.getElementById("upload");
@@ -72,7 +73,7 @@
                 paper.setup(canvas);
                 const item = paper.project.importSVG(svg);
 
-                occultAndFill(item);
+                occultAndFill(item, { fillType: "snake", spacing: 2 });
 
                 console.log("done");
 
@@ -87,7 +88,7 @@
     </script>
   </head>
   <body>
-    <h1>Plotter SVG Fill</h1>
+    <h1>Restaline - Vector Fills for Pen Plotters</h1>
     <input id="upload" type="file" />
     <div id="mock"></div>
   </body>
