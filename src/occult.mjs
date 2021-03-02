@@ -14,13 +14,11 @@ function toOrderedPaths(item, paths = []) {
   }
 
   if (item.className === "Group" || item.className === "Layer") {
-    paths = paths.concat(
-      item.children.map((item) => toOrderedPaths(item)).flat()
-    );
-  } else if (item.className === "Path") {
+    item.children.forEach((item) => {
+      toOrderedPaths(item).forEach((op) => paths.push(op));
+    });
+  } else if (item.className === "Path" || item.className === "CompoundPath") {
     paths.push(item);
-  } else if (item.className === "CompoundPath") {
-    paths.push(...item.children);
   } else console.log("skipped item type: ", item.className);
 
   return paths.sort((a, b) => a.isAbove(b));
@@ -59,7 +57,7 @@ function subtractOpenPaths(paths) {
   const subtracted = [];
 
   paths.forEach((path, i) => {
-    if (path.closed || i + 1 >= paths.length) {
+    if (path.closed || i >= paths.length - 1) {
       subtracted.push(path);
       return;
     }

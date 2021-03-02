@@ -16,11 +16,9 @@ export function fillPath(path, options = {}) {
       new paper.Point(bounds.x + bounds.width, bounds.y + spacing * i + spacing)
     );
     const inter = path.intersect(tmp);
-    //inter.strokeColor = color;
 
     inter.remove();
     tmp.remove();
-    // path.remove();
 
     fill.addChild(inter);
   }

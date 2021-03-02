@@ -8,7 +8,7 @@ export function occultAndFill(item, options = {}) {
   const offset = spacing * -1;
 
   occult(item)
-    .filter((p) => p.closed)
+    .filter((p) => p.closed) // do not fill unclosed paths
     .forEach((p) => {
       let inset = PaperOffset.offset(p, offset, { join: "round" });
 

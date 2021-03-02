@@ -37,8 +37,8 @@
 
       canvas {
         margin: 1em;
-        width: 100%;
-        height: 50em;
+        width: 1000px;
+        height: 1000px;
       }
     </style>
 
@@ -47,8 +47,8 @@
 
       window.onload = function () {
         [
-          // svgComplex,
-          nTest,
+          svgComplex,
+          // nTest,
           // svgJustCircle,
           // svgGreyCircle,
           // svgInnerCircle,
@@ -72,17 +72,6 @@
             occultAndFill(item, { fillType: "snake", spacing: 2 }),
           onError: console.error,
         });
-
-        // paper.setup(occultCanvas);
-        // paper.project.importSVG(svgString, {
-        //   expandShapes: true,
-        //   onLoad: (item) => {
-        //     item.children[0].remove(); // remove parent rectangle that paper.js creates
-        //     occult(item);
-        //     paper.view.draw();
-        //   },
-        //   onError: console.error,
-        // });
 
         const link = document.createElement("a");
         link.innerText = "Save As...";
