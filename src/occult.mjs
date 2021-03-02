@@ -1,7 +1,15 @@
+import { log } from "./utils.mjs";
+
+const PHASE = "Occulting";
+
 export function occult(item) {
+  log(PHASE, "squashing and ordering paths");
   let paths = toOrderedPaths(item);
+  log(PHASE, "closed paths", paths.length);
   paths = subtractClosedPaths(paths);
+  log(PHASE, "open paths", paths.length);
   paths = subtractOpenPaths(paths);
+  log(PHASE, "DONE");
   return paths;
 }
 
@@ -10,7 +18,7 @@ function toOrderedPaths(item, paths = []) {
     const tmp = item.toPath();
     item.remove();
     item = tmp;
-    console.log("SHAPE! this will mess up layer order?");
+    console.log("SHAPE! will this mess up layer order?");
   }
 
   if (item.className === "Group" || item.className === "Layer") {
@@ -36,6 +44,7 @@ function isPartOfPath(curve, path) {
 function subtractClosedPaths(paths) {
   return paths
     .map((path, i) => {
+      log(PHASE, "closed paths", paths.length, i + 1);
       if (i + 1 >= paths.length) return path;
       if (!path.closed) return path;
 
@@ -55,8 +64,10 @@ function subtractClosedPaths(paths) {
 
 function subtractOpenPaths(paths) {
   const subtracted = [];
+  const totalPaths = paths.length;
 
   paths.forEach((path, i) => {
+    log(PHASE, "open paths", totalPaths, i + 1);
     if (path.closed || i >= paths.length - 1) {
       subtracted.push(path);
       return;
@@ -67,7 +78,7 @@ function subtractOpenPaths(paths) {
 
       let tmp = path.subtract(path2, { insert: false });
       tmp = tmp.className === "CompoundPath" ? tmp.children : [tmp];
-      tmp.forEach((t) => {
+      tmp.forEach((t, i) => {
         let newPath;
         t.curves.forEach((c) => {
           if (isPartOfPath(c, path)) {

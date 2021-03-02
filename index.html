@@ -58,19 +58,22 @@
 
                 const canvas = document.createElement("canvas");
                 document.body.appendChild(canvas);
-                paper.setup(canvas);
+                paper.setup([1000, 1000]);
                 const item = paper.project.importSVG(svg);
 
                 occultAndFill(item, { fillType: "snake", spacing: 2 });
 
+                const svgAsString = paper.project.exportSVG({ asString: true });
                 const link = document.createElement("a");
                 link.innerText = "Save As...";
                 link.href =
                   "data:image/svg+xml;charset=utf-8," +
-                  encodeURIComponent(
-                    paper.project.exportSVG({ asString: true })
-                  );
+                  encodeURIComponent(svgAsString);
                 document.querySelector("#container").appendChild(link);
+
+                paper.setup(canvas);
+                paper.project.importSVG(svgAsString);
+                paper.view.draw();
 
                 mock.innerHTML = "";
               };

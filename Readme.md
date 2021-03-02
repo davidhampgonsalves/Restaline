@@ -1,10 +1,8 @@
 # Restaline - SVG fills for pen plotters
 
 ## TODO
-* pass in options
-* inset fills
-* fills should be lower then unclosed lines and initial paths
-* should unclosed lines be occulted by closed shapes?
+* snakeFill should add a curve between first / last point and any un-traversed edge
+* get bulbasaur working
 
 ## Development
 `python3 -m http.server 8000`

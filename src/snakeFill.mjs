@@ -3,7 +3,10 @@ import {
   removeGraphPoints,
   drawPath,
   getStartNodeID,
+  log,
 } from "./utils.mjs";
+
+const PHASE = "Filling";
 
 export function fillPath(path, options = {}) {
   let bounds = path.bounds;
