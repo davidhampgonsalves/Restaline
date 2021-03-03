@@ -12,8 +12,15 @@ export function occultAndFill(item, options = {}) {
   log("Filling", "START", pathsToFill.length);
   pathsToFill.forEach((p, i) => {
     log("Filling", "path", pathsToFill.length, i);
+
+    // inset the fill path
     const offset = spacing * (p.className === "Path" ? -1 : 1);
-    const inset = PaperOffset.offset(p, offset, { join: "round" });
+    let inset = PaperOffset.offset(p, offset, { join: "round" });
+    // PaperOffset sometimes flips the inset direction (usually on CompoundPaths) so sanity check / reverse
+    if (p.bounds.size < inset.bounds.size) {
+      inset.remove();
+      inset = PaperOffset.offset(p, -offset, { join: "round" });
+    }
 
     switch (options.fillType) {
       case "snake":
