@@ -2,6 +2,7 @@
 
 ## TODO
 * snakeFill should add a curve between first / last point and any un-traversed edge
+* improve rocket
 * get bulbasaur working
 
 ## Development

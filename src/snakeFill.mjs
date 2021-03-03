@@ -56,7 +56,27 @@ export function generateFillPath(id, graph) {
     id = nextNeighbour;
   }
 
+  // prepend point to traverse empty edge
+  if (visited.length > 3) {
+    let id = fillMissingEdge(visited[0], visited[1], graph, visited);
+    if (id) visited.unshift(id);
+  }
+
+  // append point to traverse empty edge
+  if (visited.length > 4) {
+    const len = visited.length - 1;
+    const id = fillMissingEdge(visited[len], visited[len - 1], graph, visited);
+    if (id) visited.push(id);
+  }
+
   return visited;
+}
+
+// fill empty edge on first / last points
+function fillMissingEdge(id1, id2, graph, visited) {
+  return Object.keys(graph[id1]).filter(
+    (neighbourID) => neighbourID != id2 && visited.includes(neighbourID)
+  )[0];
 }
 
 export default { fillPath };
