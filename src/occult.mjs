@@ -15,10 +15,9 @@ export function occult(item) {
 
 function toOrderedPaths(item, paths = []) {
   if (item.className === "Shape") {
-    const tmp = item.toPath();
+    const tmp = item.toPath({ insert: true });
     item.remove();
     item = tmp;
-    console.log("SHAPE! will this mess up layer order?");
   }
 
   if (item.className === "Group" || item.className === "Layer") {
@@ -33,9 +32,10 @@ function toOrderedPaths(item, paths = []) {
 }
 
 function isPartOfPath(curve, path) {
+  // todo: could we just check center?
   const testPoints = [
-    curve.point1,
-    curve.point2,
+    // curve.point1,
+    // curve.point2,
     curve.getLocationAt(curve.length / 2).point,
   ];
   return testPoints.every((pt) => path.getOffsetOf(pt) != null);
@@ -66,32 +66,34 @@ function subtractOpenPaths(paths) {
   const subtracted = [];
   const totalPaths = paths.length;
 
-  paths.forEach((path, i) => {
+  paths.forEach((orginalPath, i) => {
     log(PHASE, "open paths", totalPaths, i + 1);
-    if (path.closed || i >= paths.length - 1) {
-      subtracted.push(path);
+    if (orginalPath.closed || i >= paths.length - 1) {
+      subtracted.push(orginalPath);
       return;
     }
 
+    let path = orginalPath;
     paths.slice(i + 1).forEach((path2) => {
-      if (!path2.closed) return;
+      if (path2.closed) path = path.subtract(path2, { insert: false });
+    });
 
-      let tmp = path.subtract(path2, { insert: false });
-      tmp = tmp.className === "CompoundPath" ? tmp.children : [tmp];
-      tmp.forEach((t, i) => {
-        let newPath;
-        t.curves.forEach((c) => {
-          if (isPartOfPath(c, path)) {
-            if (!newPath) newPath = new paper.Path();
-            newPath.add(c.segment1, c.segment2);
+    path.children.forEach((p) => {
+      let occultedPath = new paper.Path();
+      p.curves.forEach((c) => {
+        if (isPartOfPath(c, orginalPath)) {
+          if (occultedPath.segments.lastSegment != c.segment1) {
+            occultedPath.strokeColor = orginalPath.strokeColor;
+            occultedPath.insertAbove(orginalPath);
+            occultedPath = new paper.Path();
           }
-        });
-        if (newPath) {
-          newPath.strokeColor = path.strokeColor;
-          subtracted.push(newPath);
+          if (occultedPath.segments.length === 0) occultedPath.add(c.segment1);
+          occultedPath.add(c.segment2);
         }
       });
-      path.remove();
+      occultedPath.strokeColor = orginalPath.strokeColor;
+      orginalPath.replaceWith(occultedPath);
+      subtracted.push(occultedPath);
     });
   });
 

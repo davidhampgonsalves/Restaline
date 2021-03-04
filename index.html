@@ -61,7 +61,11 @@
                 paper.setup([1000, 1000]);
                 const item = paper.project.importSVG(svg);
 
-                occultAndFill(item, { fillType: "snake", spacing: 2 });
+                occultAndFill(item, {
+                  fillType: "snake",
+                  spacing: 5,
+                  inset: true,
+                });
 
                 const svgAsString = paper.project.exportSVG({ asString: true });
                 const link = document.createElement("a");

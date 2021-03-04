@@ -12,23 +12,32 @@ export function occultAndFill(item, options = {}) {
   log("Filling", "START", pathsToFill.length);
   pathsToFill.forEach((p, i) => {
     log("Filling", "path", pathsToFill.length, i);
-
-    // inset the fill path
-    const offset = spacing * (p.className === "Path" ? -1 : 1);
-    let inset = PaperOffset.offset(p, offset, { join: "round" });
-    // PaperOffset sometimes flips the inset direction (usually on CompoundPaths) so sanity check / reverse
-    if (p.bounds.size < inset.bounds.size) {
-      inset.remove();
-      inset = PaperOffset.offset(p, -offset, { join: "round" });
+    let inset;
+    if (options.inset) {
+      // inset the fill path
+      const offset = spacing * (p.className === "Path" ? -1 : 1);
+      inset = PaperOffset.offset(p, offset, { join: "round" });
+      // PaperOffset sometimes flips the inset direction (usually on CompoundPaths) so sanity check / reverse
+      if (areDimensionsLarger(inset, p)) {
+        inset.remove();
+        inset = PaperOffset.offset(p, -offset, { join: "round" });
+        if (areDimensionsLarger(inset, p)) {
+          // we can't win, looks like insetting isn't possible
+          inset.remove();
+          inset = p.clone();
+          console.warn("could not inset path");
+        }
+      }
     }
 
+    const path = inset || p;
     switch (options.fillType) {
       case "snake":
-        SnakeFill.fillPath(inset, options);
+        SnakeFill.fillPath(path, options);
         break;
     }
 
-    inset.remove();
+    if (inset) inset.remove();
     // use fill color for stroke if stroke is missing
     if (!p.strokeColor) p.strokeColor = p.fillColor;
     // remove fillColor from input since generated fills serve that purpose now
@@ -36,4 +45,11 @@ export function occultAndFill(item, options = {}) {
   });
 
   log("Filling", "DONE");
+}
+
+// test if either height or width are greater
+function areDimensionsLarger(p1, p2) {
+  const s1 = p1.bounds.size,
+    s2 = p2.bounds.size;
+  return s1.width > s2.width || s1.height > s2.height;
 }
