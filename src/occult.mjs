@@ -28,7 +28,21 @@ function toOrderedPaths(item, paths = []) {
     paths.push(item);
   } else console.log("skipped item type: ", item.className);
 
+  closeVisuallyClosedPaths(paths);
   return paths.sort((a, b) => a.isAbove(b));
+}
+
+const VISUALLY_CLOSED_CUTOFF = 1;
+function closeVisuallyClosedPaths(paths) {
+  paths.forEach((path) => {
+    if (path.className === "CompoundPath")
+      return closeVisuallyClosedPaths(path.children);
+
+    const distance = path.firstSegment.point.getDistance(
+      path.lastSegment.point
+    );
+    if (distance < VISUALLY_CLOSED_CUTOFF) path.closed = true;
+  });
 }
 
 function isPartOfPath(curve, path) {
@@ -66,33 +80,33 @@ function subtractOpenPaths(paths) {
   const subtracted = [];
   const totalPaths = paths.length;
 
-  paths.forEach((orginalPath, i) => {
+  paths.forEach((originalPath, i) => {
     log(PHASE, "open paths", totalPaths, i + 1);
-    if (orginalPath.closed || i >= paths.length - 1) {
-      subtracted.push(orginalPath);
+    if (originalPath.closed || i >= paths.length - 1) {
+      subtracted.push(originalPath);
       return;
     }
 
-    let path = orginalPath;
+    let path = originalPath;
     paths.slice(i + 1).forEach((path2) => {
       if (path2.closed) path = path.subtract(path2, { insert: false });
     });
 
-    path.children.forEach((p) => {
+    (path.children || [path]).forEach((p) => {
       let occultedPath = new paper.Path();
       p.curves.forEach((c) => {
-        if (isPartOfPath(c, orginalPath)) {
+        if (isPartOfPath(c, originalPath)) {
           if (occultedPath.segments.lastSegment != c.segment1) {
-            occultedPath.strokeColor = orginalPath.strokeColor;
-            occultedPath.insertAbove(orginalPath);
+            occultedPath.strokeColor = originalPath.strokeColor;
+            occultedPath.insertAbove(originalPath);
             occultedPath = new paper.Path();
           }
           if (occultedPath.segments.length === 0) occultedPath.add(c.segment1);
           occultedPath.add(c.segment2);
         }
       });
-      occultedPath.strokeColor = orginalPath.strokeColor;
-      orginalPath.replaceWith(occultedPath);
+      occultedPath.strokeColor = originalPath.strokeColor;
+      originalPath.replaceWith(occultedPath);
       subtracted.push(occultedPath);
     });
   });
