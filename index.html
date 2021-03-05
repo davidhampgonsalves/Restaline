@@ -65,9 +65,14 @@
                   fillType: "snake",
                   spacing: 2,
                   inset: false,
+                  autoClosePaths: true,
                 });
 
                 const svgAsString = paper.project.exportSVG({ asString: true });
+                paper.setup(canvas);
+                paper.project.importSVG(svgAsString);
+                paper.view.draw();
+
                 const link = document.createElement("a");
                 link.download = file.name;
                 link.innerText = "Save As...";
@@ -75,10 +80,6 @@
                   "data:image/svg+xml;charset=utf-8," +
                   encodeURIComponent(svgAsString);
                 document.querySelector("#container").appendChild(link);
-
-                paper.setup(canvas);
-                paper.project.importSVG(svgAsString);
-                paper.view.draw();
 
                 mock.innerHTML = "";
               };

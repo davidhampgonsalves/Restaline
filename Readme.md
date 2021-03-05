@@ -1,9 +1,9 @@
 # Restaline - SVG fills for pen plotters
 
 ## TODO
-* snakeFill should add a curve between first / last point and any un-traversed edge
-* improve rocket
-* get bulbasaur working
+* missing edges on rocket
+* surface progress?
+* webworker for fills / general perf
 
 ## Development
 `python3 -m http.server 8000`

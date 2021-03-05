@@ -2,18 +2,22 @@ import { log } from "./utils.mjs";
 
 const PHASE = "Occulting";
 
-export function occult(item) {
+export function occult(item, options) {
   log(PHASE, "squashing and ordering paths");
-  let paths = toOrderedPaths(item);
+  let paths = toOrderedPaths(item, options);
   log(PHASE, "closed paths", paths.length);
+
+  // todo: webworker
   paths = subtractClosedPaths(paths);
   log(PHASE, "open paths", paths.length);
   paths = subtractOpenPaths(paths);
+  // end web worker
+
   log(PHASE, "DONE");
   return paths;
 }
 
-function toOrderedPaths(item, paths = []) {
+function toOrderedPaths(item, options, paths = []) {
   if (item.className === "Shape") {
     const tmp = item.toPath({ insert: true });
     item.remove();
@@ -22,13 +26,13 @@ function toOrderedPaths(item, paths = []) {
 
   if (item.className === "Group" || item.className === "Layer") {
     item.children.forEach((item) => {
-      toOrderedPaths(item).forEach((op) => paths.push(op));
+      toOrderedPaths(item, options).forEach((op) => paths.push(op));
     });
   } else if (item.className === "Path" || item.className === "CompoundPath") {
     paths.push(item);
   } else console.log("skipped item type: ", item.className);
 
-  closeVisuallyClosedPaths(paths);
+  if (options.autoClosePaths) closeVisuallyClosedPaths(paths);
   return paths.sort((a, b) => a.isAbove(b));
 }
 
@@ -45,16 +49,7 @@ function closeVisuallyClosedPaths(paths) {
   });
 }
 
-function isPartOfPath(curve, path) {
-  // todo: could we just check center?
-  const testPoints = [
-    // curve.point1,
-    // curve.point2,
-    curve.getLocationAt(curve.length / 2).point,
-  ];
-  return testPoints.every((pt) => path.getOffsetOf(pt) != null);
-}
-
+// todo: avoid map final empty check
 function subtractClosedPaths(paths) {
   return paths
     .map((path, i) => {
@@ -62,12 +57,15 @@ function subtractClosedPaths(paths) {
       if (i + 1 >= paths.length) return path;
       if (!path.closed) return path;
 
+      let isEmpty = false;
       paths.slice(i + 1).forEach((path2) => {
+        if (isEmpty) return; // if path has become empty then stop
         if (!path2.closed) return;
 
         const tmp = path.subtract(path2);
         path.remove();
         path = tmp;
+        if (path.isEmpty(true)) isEmpty = true;
       });
 
       if (window.DEBUG) path.strokeColor = "black";
@@ -88,8 +86,12 @@ function subtractOpenPaths(paths) {
     }
 
     let path = originalPath;
+    let isEmpty = false;
     paths.slice(i + 1).forEach((path2) => {
-      if (path2.closed) path = path.subtract(path2, { insert: false });
+      if (!path2.closed) return;
+      if (isEmpty) return; // if path has become empty then stop
+      path = path.subtract(path2, { insert: false });
+      if (path.isEmpty(true)) isEmpty = true;
     });
 
     (path.children || [path]).forEach((p) => {
@@ -112,4 +114,9 @@ function subtractOpenPaths(paths) {
   });
 
   return subtracted.filter((path) => !path.isEmpty());
+}
+
+function isPartOfPath(curve, path) {
+  const pt = curve.getLocationAt(curve.length / 2).point;
+  return path.getOffsetOf(pt) != null;
 }

@@ -7,7 +7,7 @@ export function occultAndFill(item, options = {}) {
 
   const { spacing } = options;
 
-  const pathsToFill = occult(item).filter((p) => p.closed); // do not fill unclosed paths
+  const pathsToFill = occult(item, options).filter((p) => p.closed); // do not fill unclosed paths
 
   log("Filling", "START", pathsToFill.length);
   pathsToFill.forEach((p, i) => {
