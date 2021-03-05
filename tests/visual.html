@@ -72,7 +72,7 @@
         paper.project.importSVG(svgString, {
           expandShapes: true,
           onLoad: (item) =>
-            occultAndFill(item, { fillType: "snake", spacing: 2 }),
+            occultAndFill(item, { fillType: "snake", spacing: 2, inset: true }),
           onError: console.error,
         });
 
@@ -82,12 +82,12 @@
         link.href =
           "data:image/svg+xml;charset=utf-8," +
           encodeURIComponent(paper.project.exportSVG({ asString: true }));
-        container.appendChild(link);
+        document.querySelector("#heading").appendChild(link);
       }
     </script>
   </head>
   <body>
-    <div>
+    <div id="heading">
       <h1>Plotter Fill Visual Tests</h1>
       <a href="index.html">unit tests</a>
     </div>

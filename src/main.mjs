@@ -2,12 +2,14 @@ import { occult } from "./occult.mjs";
 import SnakeFill from "./snakeFill.mjs";
 import { log } from "./utils.mjs";
 
-export function occultAndFill(item, options = {}) {
+export async function occultAndFill(item, options = {}) {
+  paper.project.clear();
   item.children[0].remove(); // remove parent rectangle that paper.js creates
 
   const { spacing } = options;
 
-  const pathsToFill = occult(item, options).filter((p) => p.closed); // do not fill unclosed paths
+  const occultedPaths = await occult(item, options);
+  const pathsToFill = occultedPaths.filter((p) => p.closed); // do not fill unclosed paths
 
   log("Filling", "START", pathsToFill.length);
   pathsToFill.forEach((p, i) => {
@@ -44,6 +46,14 @@ export function occultAndFill(item, options = {}) {
     p.fillColor = null;
   });
 
+  paper.project.activeLayer.addChildren(occultedPaths);
+
+  // occultedPaths
+  //   // .filter((p) => !p.closed)
+  //   .forEach((p) => {
+  //     p.strokeColor = "black";
+  //     paper.project.activeLayer.addChild(p);
+  //   });
   log("Filling", "DONE");
 }
 

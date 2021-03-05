@@ -2,19 +2,45 @@ import { log } from "./utils.mjs";
 
 const PHASE = "Occulting";
 
-export function occult(item, options) {
+export async function occult(item, options) {
   log(PHASE, "squashing and ordering paths");
-  let paths = toOrderedPaths(item, options);
-  log(PHASE, "closed paths", paths.length);
+  const paths = toOrderedPaths(item, options);
+  const pathsJSON = paths.map((p) => p.exportJSON());
 
-  // todo: webworker
-  paths = subtractClosedPaths(paths);
-  log(PHASE, "open paths", paths.length);
-  paths = subtractOpenPaths(paths);
-  // end web worker
+  const occultedPaths = await spawnSubtractionWorkers(paths, pathsJSON);
 
   log(PHASE, "DONE");
-  return paths;
+  return occultedPaths;
+}
+
+async function spawnSubtractionWorkers(paths, pathsJSON) {
+  const promises = [];
+  paths.forEach((path, i) => {
+    const pathsToSubtractJSON = pathsJSON.slice(i + 1);
+
+    const workerPromise = new Promise((resolve, reject) => {
+      const worker = new Worker(
+        `/src/workers/subtract${path.closed ? "Closed" : "Open"}Paths.mjs`
+      );
+      worker.addEventListener("message", (event) => resolve(event.data));
+      worker.addEventListener("error", reject);
+
+      worker.postMessage({ pathJSON: pathsJSON[i], pathsToSubtractJSON });
+    });
+    promises.push(workerPromise);
+  });
+
+  try {
+    const rc = await Promise.all(promises).then(
+      (paths) =>
+        paths
+          .filter((p) => p !== null)
+          .map((json) => paper.Project.importJSON(json)) // filter any paths that were empty as a result of subtraction
+    );
+    return rc;
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 function toOrderedPaths(item, options, paths = []) {
@@ -47,31 +73,6 @@ function closeVisuallyClosedPaths(paths) {
     );
     if (distance < VISUALLY_CLOSED_CUTOFF) path.closed = true;
   });
-}
-
-// todo: avoid map final empty check
-function subtractClosedPaths(paths) {
-  return paths
-    .map((path, i) => {
-      log(PHASE, "closed paths", paths.length, i + 1);
-      if (i + 1 >= paths.length) return path;
-      if (!path.closed) return path;
-
-      let isEmpty = false;
-      paths.slice(i + 1).forEach((path2) => {
-        if (isEmpty) return; // if path has become empty then stop
-        if (!path2.closed) return;
-
-        const tmp = path.subtract(path2);
-        path.remove();
-        path = tmp;
-        if (path.isEmpty(true)) isEmpty = true;
-      });
-
-      if (window.DEBUG) path.strokeColor = "black";
-      return path;
-    })
-    .filter((path) => !path.isEmpty());
 }
 
 function subtractOpenPaths(paths) {
@@ -114,9 +115,4 @@ function subtractOpenPaths(paths) {
   });
 
   return subtracted.filter((path) => !path.isEmpty());
-}
-
-function isPartOfPath(curve, path) {
-  const pt = curve.getLocationAt(curve.length / 2).point;
-  return path.getOffsetOf(pt) != null;
 }

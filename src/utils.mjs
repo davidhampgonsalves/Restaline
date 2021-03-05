@@ -102,3 +102,13 @@ const ROUND = 1;
 function roundPt(pt) {
   return Math.round(pt * ROUND) / ROUND;
 }
+
+export function importJSON(json) {
+  return { item: project.importJSON(pathJSON), id: jsonPath.id };
+}
+
+export function exportJSON(item) {
+  const json = item.exportJSON();
+  json._id = Math.floor(Math.random() * 100000000000000); // probably enough entrophy
+  return json;
+}
