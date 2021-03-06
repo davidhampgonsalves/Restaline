@@ -1,65 +1,65 @@
 import { occult } from "./occult.mjs";
-import SnakeFill from "./snakeFill.mjs";
 import { log } from "./utils.mjs";
 
 export async function occultAndFill(item, options = {}) {
   paper.project.clear();
   item.children[0].remove(); // remove parent rectangle that paper.js creates
 
-  const { spacing } = options;
-
+  const promises = [];
   const occultedPaths = await occult(item, options);
-  const pathsToFill = occultedPaths.filter((p) => p.closed); // do not fill unclosed paths
-
-  log("Filling", "START", pathsToFill.length);
-  pathsToFill.forEach((p, i) => {
-    log("Filling", "path", pathsToFill.length, i);
-    let inset;
-    if (options.inset) {
-      // inset the fill path
-      const offset = spacing * (p.className === "Path" ? -1 : 1);
-      inset = PaperOffset.offset(p, offset, { join: "round" });
-      // PaperOffset sometimes flips the inset direction (usually on CompoundPaths) so sanity check / reverse
-      if (areDimensionsLarger(inset, p)) {
-        inset.remove();
-        inset = PaperOffset.offset(p, -offset, { join: "round" });
-        if (areDimensionsLarger(inset, p)) {
-          // we can't win, looks like insetting isn't possible
+  occultedPaths
+    .filter((p) => p.closed) // do not fill unclosed paths
+    .forEach((path) => {
+      if (options.inset) {
+        let inset;
+        // inset the fill path
+        const offset = options.spacing * (path.className === "Path" ? -1 : 1);
+        inset = PaperOffset.offset(path, offset, { join: "round" });
+        const pathArea = path.area;
+        // PaperOffset sometimes flips the inset direction (usually on CompoundPaths) so sanity check / reverse
+        if (inset.area > pathArea) {
           inset.remove();
-          inset = p.clone();
-          console.warn("could not inset path");
+          inset = PaperOffset.offset(path, -offset, { join: "round" });
+          if (inset.area > pathArea) {
+            // we can't win, looks like insetting isn't possible
+            inset.remove();
+            inset = path.clone();
+          }
         }
+        path = inset;
       }
-    }
 
-    const path = inset || p;
-    switch (options.fillType) {
-      case "snake":
-        SnakeFill.fillPath(path, options);
-        break;
-    }
+      const workerPromise = new Promise((resolve, reject) => {
+        const worker = new Worker(`/src/workers/fillPaths.js`);
+        worker.addEventListener("message", (event) => resolve(event.data));
+        worker.addEventListener("error", reject);
+        worker.postMessage({ pathJSON: path.exportJSON(), options });
+      });
+      promises.push(workerPromise);
+    });
 
-    if (inset) inset.remove();
-    // use fill color for stroke if stroke is missing
-    if (!p.strokeColor) p.strokeColor = p.fillColor;
-    // remove fillColor from input since generated fills serve that purpose now
-    p.fillColor = null;
-  });
+  let fillJSON;
+  try {
+    await Promise.all(promises).then((paths) => {
+      fillJSON = paths;
+    });
+  } catch (e) {
+    console.error(e);
+  }
+  const fillPaths = fillJSON
+    .flat()
+    .map((json) => paper.project.importJSON(json));
+
+  // todo: move into occult
+  if (options.fillType)
+    // if fills were generated then remove basic shape fills
+    occultedPaths.forEach((p) => {
+      p.strokeColor = p.strokeColor || p.fillColor;
+      p.fillColor = null;
+    });
 
   paper.project.activeLayer.addChildren(occultedPaths);
+  paper.project.activeLayer.addChildren(fillPaths);
 
-  // occultedPaths
-  //   // .filter((p) => !p.closed)
-  //   .forEach((p) => {
-  //     p.strokeColor = "black";
-  //     paper.project.activeLayer.addChild(p);
-  //   });
-  log("Filling", "DONE");
-}
-
-// test if either height or width are greater
-function areDimensionsLarger(p1, p2) {
-  const s1 = p1.bounds.size,
-    s2 = p2.bounds.size;
-  return s1.width > s2.width || s1.height > s2.height;
+  log("FILLING", "DONE");
 }

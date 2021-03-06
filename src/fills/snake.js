@@ -1,45 +1,33 @@
-import {
-  pathsToGraph,
-  removeGraphPoints,
-  drawPath,
-  getStartNodeID,
-  log,
-} from "./utils.mjs";
-
-const PHASE = "Filling";
-
-export function fillPath(path, options = {}) {
+function snakeFill(path, options) {
   let bounds = path.bounds;
-  const fill = new paper.Group();
   const { spacing } = options;
 
+  const fill = [];
   for (let i = 0; i * spacing < bounds.height; i++) {
-    const tmp = new paper.Path.Rectangle(
+    const recPath = new paper.Path.Rectangle(
       new paper.Point(bounds.x, bounds.y + spacing * i),
       new paper.Point(bounds.x + bounds.width, bounds.y + spacing * i + spacing)
     );
-    const inter = path.intersect(tmp);
-
-    inter.remove();
-    tmp.remove();
-
-    fill.addChild(inter);
+    const inter = path.intersect(recPath, { insert: false });
+    if (!inter.isEmpty()) fill.push(inter);
   }
 
-  const graph = pathsToGraph(fill.children);
+  const graph = pathsToGraph(fill);
   let nodeIDs = Object.keys(graph);
+  const fillPaths = [];
   while (nodeIDs.length > 0) {
     const startPoint = getStartNodeID(nodeIDs);
-    const points = generateFillPath(startPoint, graph);
-    drawPath(points, fill.children, path.fillColor);
+    const points = generateSnakeFillPath(startPoint, graph);
+    const fillPath = drawPath(points, fill, path.fillColor);
+    fillPaths.push(fillPath);
     removeGraphPoints(points, graph);
     nodeIDs = Object.keys(graph);
   }
 
-  fill.remove();
+  return fillPaths;
 }
 
-export function generateFillPath(id, graph) {
+function generateSnakeFillPath(id, graph) {
   const visited = [id];
 
   while (true) {
@@ -78,5 +66,3 @@ function fillMissingEdge(id1, id2, graph, visited) {
     (neighbourID) => neighbourID != id2 && visited.includes(neighbourID)
   )[0];
 }
-
-export default { fillPath };

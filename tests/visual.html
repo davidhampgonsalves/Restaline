@@ -72,7 +72,11 @@
         paper.project.importSVG(svgString, {
           expandShapes: true,
           onLoad: (item) =>
-            occultAndFill(item, { fillType: "snake", spacing: 2, inset: true }),
+            occultAndFill(item, {
+              fillType: "snake",
+              spacing: 2,
+              inset: false,
+            }),
           onError: console.error,
         });
 

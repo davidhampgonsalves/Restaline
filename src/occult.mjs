@@ -20,7 +20,7 @@ async function spawnSubtractionWorkers(paths, pathsJSON) {
 
     const workerPromise = new Promise((resolve, reject) => {
       const worker = new Worker(
-        `/src/workers/subtract${path.closed ? "Closed" : "Open"}Paths.mjs`
+        `/src/workers/subtract${path.closed ? "Closed" : "Open"}Paths.js`
       );
       worker.addEventListener("message", (event) => resolve(event.data));
       worker.addEventListener("error", reject);
@@ -35,7 +35,7 @@ async function spawnSubtractionWorkers(paths, pathsJSON) {
       (paths) =>
         paths
           .filter((p) => p !== null)
-          .map((json) => paper.Project.importJSON(json)) // filter any paths that were empty as a result of subtraction
+          .map((json) => paper.project.importJSON(json)) // filter any paths that were empty as a result of subtraction
     );
     return rc;
   } catch (e) {
