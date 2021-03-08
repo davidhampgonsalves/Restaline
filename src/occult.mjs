@@ -3,7 +3,7 @@ import { log } from "./utils.mjs";
 const PHASE = "Occulting";
 
 export async function occult(paths, options) {
-  log(PHASE, "squashing and ordering paths");
+  log(PHASE);
   const pathsJSON = paths.map((p) => p.exportJSON());
 
   const occultedPaths = await spawnSubtractionWorkers(paths, pathsJSON);
@@ -35,6 +35,7 @@ async function spawnSubtractionWorkers(paths, pathsJSON) {
           .filter((p) => p !== null)
           .map((json) => paper.project.importJSON(json)) // filter any paths that were empty as a result of subtraction
     );
+    log(PHASE, "DONE");
     return rc;
   } catch (e) {
     console.error(e);

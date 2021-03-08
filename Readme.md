@@ -3,11 +3,8 @@
 ## TODO
 
 - missing edges on rocket
+- duplicated edge lines... take top or inset both?
 - surface progress?
-- unite vectors that are same color rather then subtracting?
-  paths
-  iterate up through paths uniting paths until:
-  a path is found of a different color that overlaps the current path
 
 ## Development
 

@@ -1,6 +1,8 @@
 import { inset } from "./inset.mjs";
+import { log } from "./utils.mjs";
 
 export async function fill(paths, options) {
+  log("Filling");
   const promises = [];
   paths
     .filter((p) => p.closed) // do not fill unclosed paths
@@ -36,5 +38,6 @@ export async function fill(paths, options) {
       p.fillColor = null;
     });
 
+  log("FILLING", "DONE");
   return fillPaths;
 }

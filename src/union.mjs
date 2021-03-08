@@ -3,7 +3,7 @@ import { log } from "./utils.mjs";
 const PHASE = "Unioning";
 
 export function union(paths, options) {
-  log(PHASE, "Unioning paths");
+  log(PHASE);
 
   const unitedPaths = [];
   const skipIndexes = [];
@@ -38,5 +38,6 @@ export function union(paths, options) {
     unitedPaths.push(path);
   });
 
+  log(PHASE, "DONE");
   return unitedPaths;
 }

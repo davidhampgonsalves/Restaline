@@ -1,5 +1,5 @@
 export function log(phase, desc, total = -1, index = -1) {
-  let msg = `${phase}: ${desc}`;
+  let msg = desc ? `${phase}: ${desc}` : phase;
   if (total >= 0) {
     if (index >= 0) msg += `(${index} / ${total})`;
     else msg += `(${total} remaining)`;
@@ -14,26 +14,23 @@ export function toOrderedPaths(item, options, paths = [], depth = 0) {
     });
   } else if (item.className === "Path" || item.className === "CompoundPath") {
     paths.push(item);
-  } /*else if (item.className === "Shape") {
-    const path = item.toPath(false);
-    item.replaceWith(path);
-    paths.push(path);
-  } */ else
-    console.log("skipped item type: ", item.className);
+  } else console.log("skipped item type: ", item.className);
 
   if (depth > 0) return paths;
   return paths.sort((a, b) => a.isAbove(b));
 }
 
 const VISUALLY_CLOSED_CUTOFF = 1;
-export function closeVisuallyClosedPaths(paths) {
+export function closeVisuallyClosedPaths(paths, isRecursing = false) {
+  if (!isRecursing) log("Auto Closing Paths");
   paths.forEach((path) => {
     if (path.className === "CompoundPath")
-      return closeVisuallyClosedPaths(path.children);
+      return closeVisuallyClosedPaths(path.children, true);
 
     const distance = path.firstSegment.point.getDistance(
       path.lastSegment.point
     );
     if (distance < VISUALLY_CLOSED_CUTOFF) path.closed = true;
   });
+  if (!isRecursing) log("Auto Closing Paths", "DONE.");
 }

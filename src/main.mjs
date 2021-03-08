@@ -14,7 +14,7 @@ export async function occultAndFill(item, options = {}) {
 
   if (options.fillType) {
     const fillPaths = await fill(paths, options);
-    paper.project.activeLayer.addChildren(fillPaths);
     log("FILLING", "DONE");
+    paper.project.activeLayer.addChildren(fillPaths);
   }
 }
