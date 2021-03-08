@@ -72,25 +72,27 @@
         paper.setup(fillCanvas);
         paper.project.importSVG(svgString, {
           expandShapes: true,
-          onLoad: (item) =>
-            occultAndFill(item, {
+          insert: false,
+          onLoad: async function (item) {
+            await occultAndFill(item, {
               fillType: "snake",
               spacing: 2,
               inset: true,
               union: true,
               occult: true,
               autoClosePaths: true,
-            }),
+            });
+
+            const link = document.createElement("a");
+            link.innerText = "Save As...";
+            link.download = "test.svg";
+            link.href =
+              "data:image/svg+xml;charset=utf-8," +
+              encodeURIComponent(paper.project.exportSVG({ asString: true }));
+            document.querySelector("#heading").appendChild(link);
+          },
           onError: console.error,
         });
-
-        const link = document.createElement("a");
-        link.innerText = "Save As...";
-        link.download = "test.svg";
-        link.href =
-          "data:image/svg+xml;charset=utf-8," +
-          encodeURIComponent(paper.project.exportSVG({ asString: true }));
-        document.querySelector("#heading").appendChild(link);
       }
     </script>
   </head>

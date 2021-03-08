@@ -14,11 +14,12 @@ export function toOrderedPaths(item, options, paths = [], depth = 0) {
     });
   } else if (item.className === "Path" || item.className === "CompoundPath") {
     paths.push(item);
-  } else if (item.className === "Shape") {
+  } /*else if (item.className === "Shape") {
     const path = item.toPath(false);
     item.replaceWith(path);
     paths.push(path);
-  } else console.log("skipped item type: ", item.className);
+  } */ else
+    console.log("skipped item type: ", item.className);
 
   if (depth > 0) return paths;
   return paths.sort((a, b) => a.isAbove(b));

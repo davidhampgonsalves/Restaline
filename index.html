@@ -52,18 +52,21 @@
               }
 
               var reader = new FileReader();
-              reader.onloadend = function (e) {
+              reader.onloadend = async function (e) {
                 mock.innerHTML = e.target.result;
                 var svg = mock.querySelector("svg");
 
                 const canvas = document.createElement("canvas");
                 document.body.appendChild(canvas);
                 paper.setup([1000, 1000]);
-                const item = paper.project.importSVG(svg);
+                const item = paper.project.importSVG(svg, {
+                  insert: false,
+                  expandShapes: true,
+                });
 
-                occultAndFill(item, {
+                await occultAndFill(item, {
                   fillType: "snake",
-                  spacing: 2,
+                  spacing: 3,
                   inset: true,
                   autoClosePaths: true,
                   union: true,
