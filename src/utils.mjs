@@ -6,3 +6,33 @@ export function log(phase, desc, total = -1, index = -1) {
   }
   console.log(msg);
 }
+
+export function toOrderedPaths(item, options, paths = [], depth = 0) {
+  if (item.className === "Group" || item.className === "Layer") {
+    item.children.forEach((item) => {
+      toOrderedPaths(item, options, paths, depth + 1);
+    });
+  } else if (item.className === "Path" || item.className === "CompoundPath") {
+    paths.push(item);
+  } else if (item.className === "Shape") {
+    const path = item.toPath(false);
+    item.replaceWith(path);
+    paths.push(path);
+  } else console.log("skipped item type: ", item.className);
+
+  if (depth > 0) return paths;
+  return paths.sort((a, b) => a.isAbove(b));
+}
+
+const VISUALLY_CLOSED_CUTOFF = 1;
+export function closeVisuallyClosedPaths(paths) {
+  paths.forEach((path) => {
+    if (path.className === "CompoundPath")
+      return closeVisuallyClosedPaths(path.children);
+
+    const distance = path.firstSegment.point.getDistance(
+      path.lastSegment.point
+    );
+    if (distance < VISUALLY_CLOSED_CUTOFF) path.closed = true;
+  });
+}

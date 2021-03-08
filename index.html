@@ -64,8 +64,10 @@
                 occultAndFill(item, {
                   fillType: "snake",
                   spacing: 2,
-                  inset: false,
+                  inset: true,
                   autoClosePaths: true,
+                  union: true,
+                  occult: true,
                 });
 
                 const svgAsString = paper.project.exportSVG({ asString: true });

@@ -10,7 +10,7 @@ onmessage = function ({ data: { pathJSON, pathsToSubtractJSON } }) {
   );
 
   const pathCount = pathsToSubtract.length;
-  for (let i = 0; i < pathCount - 1; i++) {
+  for (let i = 0; i < pathCount; i++) {
     const path2 = pathsToSubtract[i];
     if (!path2.closed) continue;
     const tmp = path.subtract(path2);
