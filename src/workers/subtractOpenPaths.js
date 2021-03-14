@@ -1,7 +1,7 @@
 importScripts("/node_modules/paper/dist/paper-core.js");
 
 paper.install(this);
-paper.setup([640, 480]);
+paper.setup([1000, 1000]);
 
 onmessage = function ({ data: { pathJSON, pathsToSubtractJSON } }) {
   const originalPath = paper.project.importJSON(pathJSON);
@@ -14,12 +14,10 @@ onmessage = function ({ data: { pathJSON, pathsToSubtractJSON } }) {
   for (let i = 0; i < pathCount; i++) {
     const path2 = pathsToSubtract[i];
 
-    if (!path2.closed) return;
+    // TODO: should we check that the paths overlap before we subtract?
+    if (!path2.closed || !path2.hasFill()) continue;
     path = path.subtract(path2, { insert: false });
-    if (path.isEmpty(true)) {
-      postMessage(null);
-      return;
-    }
+    if (path.isEmpty(true)) return postMessage(null); // the path was totally subtracted away (exit)
   }
 
   const occulted = [];

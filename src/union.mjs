@@ -2,15 +2,17 @@ import { log } from "./utils.mjs";
 
 const PHASE = "Unioning";
 
-export function union(paths, options) {
+export default function union(paths, options) {
   log(PHASE);
 
   const unitedPaths = [];
   const skipIndexes = [];
   paths.forEach((path, i) => {
-    if (!path.fillColor) {
+    if (!path.hasFill()) {
+      // only union filled paths
       unitedPaths.push(path);
-      return; // only union filled paths
+      skipIndexes.push(i);
+      return;
     }
     if (skipIndexes.includes(i)) return; // already united
 
@@ -23,15 +25,7 @@ export function union(paths, options) {
         if (!path.intersects(path2)) continue;
         path = path.unite(path2, { insert: false });
         skipIndexes.push(j);
-      } else {
-        const intersections = path.getIntersections(
-          path2,
-          (inter) => inter.isCrossing() && inter.path.equals(path2)
-        );
-        if (intersections.length > 0) {
-          unitedPaths.push(path);
-          return;
-        }
+        j = i + 1; // since we probably enlarged the path recheck other paths we may have skipped on previous passes
       }
     }
 

@@ -1,11 +1,11 @@
 import { inset } from "./inset.mjs";
 import { log } from "./utils.mjs";
 
-export async function fill(paths, options) {
+export default async function fill(paths, options) {
   log("Filling");
   const promises = [];
   paths
-    .filter((p) => p.closed) // do not fill unclosed paths
+    .filter((p) => p.closed && p.hasFill()) // do not fill unclosed or unfilled paths
     .forEach((path) => {
       if (options.inset) path = inset(path, options); // inset lib needs DOM so do this in browser thread
 

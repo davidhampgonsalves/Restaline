@@ -1,3 +1,5 @@
+export const CANVAS_SIZE = [1000, 1000];
+
 export function log(phase, desc, total = -1, index = -1) {
   let msg = desc ? `${phase}: ${desc}` : phase;
   if (total >= 0) {

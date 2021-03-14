@@ -9,7 +9,7 @@ function snakeFill(path, options) {
       new paper.Point(bounds.x + bounds.width, bounds.y + spacing * i + spacing)
     );
     const inter = path.intersect(recPath, { insert: false });
-    if (!inter.isEmpty()) fill.push(inter);
+    if (!inter.isEmpty(true)) fill.push(inter);
   }
 
   const graph = pathsToGraph(fill);

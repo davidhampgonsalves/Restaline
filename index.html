@@ -18,8 +18,6 @@
 
       canvas {
         margin: 1em;
-        width: 1000px;
-        height: 1000px;
       }
 
       div {
@@ -56,9 +54,8 @@
                 mock.innerHTML = e.target.result;
                 var svg = mock.querySelector("svg");
 
-                const canvas = document.createElement("canvas");
-                document.body.appendChild(canvas);
-                paper.setup([1000, 1000]);
+                const canvas = document.querySelector("canvas");
+                paper.setup(canvas);
                 const item = paper.project.importSVG(svg, {
                   insert: false,
                   expandShapes: true,
@@ -66,9 +63,10 @@
 
                 await occultAndFill(item, {
                   fillType: "snake",
-                  spacing: 3,
+                  spacing: 1,
                   inset: true,
                   autoClosePaths: true,
+                  colorGroups: true,
                   union: true,
                   occult: true,
                 });
@@ -101,6 +99,7 @@
     <div id="container">
       <input id="upload" type="file" />
     </div>
+    <canvas resize></canvas>
     <div id="mock"></div>
   </body>
 </html>
