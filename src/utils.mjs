@@ -1,5 +1,3 @@
-export const CANVAS_SIZE = [1000, 1000];
-
 export function log(phase, desc, total = -1, index = -1) {
   let msg = desc ? `${phase}: ${desc}` : phase;
   if (total >= 0) {
@@ -15,7 +13,8 @@ export function toOrderedPaths(item, options, paths = [], depth = 0) {
       toOrderedPaths(item, options, paths, depth + 1);
     });
   } else if (item.className === "Path" || item.className === "CompoundPath") {
-    paths.push(item);
+    // ignore un-colored paths
+    if (item.strokeColor || item.fillColor) paths.push(item);
   } else console.log("skipped item type: ", item.className);
 
   if (depth > 0) return paths;

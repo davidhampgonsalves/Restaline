@@ -41,77 +41,81 @@
         input.addEventListener(
           "change",
           function () {
-            var i = 0,
-              len = this.files.length,
-              img,
-              file;
+            const file = this.files[0];
+            const fileName = file.name.slice(0, -4);
 
-            for (; i < len; i++) {
-              file = this.files[i];
-
-              if (!filter.test(file.type)) {
-                alert("bad file type");
-                return null;
-              }
-
-              var reader = new FileReader();
-              reader.onloadend = async function (e) {
-                mock.innerHTML = e.target.result;
-
-                var svg = mock.querySelector("svg");
-
-                const canvasContainer = document.querySelector(
-                  "#canvas-container"
-                );
-                const size = svg.getBBox();
-                const canvas = document.querySelector("canvas");
-                canvas.width = document.body.clientWidth;
-                canvas.height = `${
-                  document.body.clientWidth * (size.height / size.width)
-                }`;
-                paper.setup(canvas);
-                paper.autoUpdate = false;
-
-                const item = paper.project.importSVG(svg, {
-                  insert: false,
-                  expandShapes: true,
-                });
-
-                const options = {
-                  fillType: "snake",
-                  spacing: 1.2,
-                  inset: true,
-                  autoClosePaths: true,
-                  colorGroups: true,
-                  union: true,
-                  occult: true,
-                };
-                const paths = await occultAndFill(item, size, options);
-
-                paper.project.clear();
-                // add paths or layers (if group by color is enabled)
-                if (options.colorGroups)
-                  paths.forEach((l) => paper.project.insertLayer(undefined, l));
-                else paper.project.activeLayer.addChildren(paths);
-
-                const svgAsString = paper.project.exportSVG({ asString: true });
-
-                const link = document.createElement("a");
-                link.download = file.name;
-                link.innerText = "Save As...";
-                link.href =
-                  "data:image/svg+xml;charset=utf-8," +
-                  encodeURIComponent(svgAsString);
-                document.querySelector("#container").appendChild(link);
-
-                mock.innerHTML = svgAsString;
-              };
-              reader.readAsText(file);
+            if (!filter.test(file.type)) {
+              alert("bad file type");
+              return null;
             }
+
+            var reader = new FileReader();
+            reader.onloadend = async function (e) {
+              mock.innerHTML = e.target.result;
+
+              var svg = mock.querySelector("svg");
+
+              const canvasContainer = document.querySelector(
+                "#canvas-container"
+              );
+              const size = svg.getBBox();
+              const canvas = document.querySelector("canvas");
+              canvas.width = document.body.clientWidth;
+              canvas.height = `${
+                document.body.clientWidth * (size.height / size.width)
+              }`;
+              paper.setup(canvas);
+              paper.autoUpdate = false;
+
+              const item = paper.project.importSVG(svg, {
+                insert: false,
+                expandShapes: true,
+              });
+
+              const options = {
+                fillType: "snake",
+                spacing: 1.2,
+                inset: false,
+                autoClosePaths: true,
+                colorGroups: true,
+                union: true,
+                occult: true,
+              };
+              const paths = await occultAndFill(item, size, options);
+
+              paths.forEach((p, i) => {
+                paper.project.clear();
+                paper.project.activeLayer.addChild(p);
+                const svgAsString = paper.project.exportSVG({
+                  asString: true,
+                });
+                createLink(
+                  p.strokeColor.toCSS(),
+                  `${fileName}-${i + 1}.svg`,
+                  svgAsString
+                );
+              });
+
+              paper.project.clear();
+              paper.project.activeLayer.addChildren(paths);
+              const svgAsString = paper.project.exportSVG({ asString: true });
+              mock.innerHTML = svgAsString;
+            };
+            reader.readAsText(file);
           },
           true
         );
       };
+
+      function createLink(color, name, dataString) {
+        const link = document.createElement("a");
+        link.download = name;
+        link.innerText = name;
+        link.style = "background:" + color;
+        link.href =
+          "data:image/svg+xml;charset=utf-8," + encodeURIComponent(dataString);
+        document.querySelector("#container").appendChild(link);
+      }
     </script>
   </head>
   <body>
