@@ -8,10 +8,10 @@
 
 # TODO
 
-- avoid filling unfilled paths
 - surface progress somehow
 - fill using fixed angle
-- Split up final paths into groups
+- order paths to avoid smugging
+- Split up final paths into groups, or files?
 
 ## Development
 

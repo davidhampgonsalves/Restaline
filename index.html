@@ -18,6 +18,11 @@
 
       canvas {
         margin: 1em;
+        display: none;
+      }
+
+      #canvas-container {
+        width: 1000px;
       }
 
       div {
@@ -52,29 +57,44 @@
               var reader = new FileReader();
               reader.onloadend = async function (e) {
                 mock.innerHTML = e.target.result;
+
                 var svg = mock.querySelector("svg");
 
+                const canvasContainer = document.querySelector(
+                  "#canvas-container"
+                );
+                const size = svg.getBBox();
                 const canvas = document.querySelector("canvas");
+                canvas.width = document.body.clientWidth;
+                canvas.height = `${
+                  document.body.clientWidth * (size.height / size.width)
+                }`;
                 paper.setup(canvas);
+                paper.autoUpdate = false;
+
                 const item = paper.project.importSVG(svg, {
                   insert: false,
                   expandShapes: true,
                 });
 
-                await occultAndFill(item, {
+                const options = {
                   fillType: "snake",
-                  spacing: 1,
+                  spacing: 1.2,
                   inset: true,
                   autoClosePaths: true,
                   colorGroups: true,
                   union: true,
                   occult: true,
-                });
+                };
+                const paths = await occultAndFill(item, size, options);
+
+                paper.project.clear();
+                // add paths or layers (if group by color is enabled)
+                if (options.colorGroups)
+                  paths.forEach((l) => paper.project.insertLayer(undefined, l));
+                else paper.project.activeLayer.addChildren(paths);
 
                 const svgAsString = paper.project.exportSVG({ asString: true });
-                paper.setup(canvas);
-                paper.project.importSVG(svgAsString);
-                paper.view.draw();
 
                 const link = document.createElement("a");
                 link.download = file.name;
@@ -84,7 +104,7 @@
                   encodeURIComponent(svgAsString);
                 document.querySelector("#container").appendChild(link);
 
-                mock.innerHTML = "";
+                mock.innerHTML = svgAsString;
               };
               reader.readAsText(file);
             }
@@ -99,7 +119,7 @@
     <div id="container">
       <input id="upload" type="file" />
     </div>
-    <canvas resize></canvas>
     <div id="mock"></div>
+    <canvas resize></canvas>
   </body>
 </html>

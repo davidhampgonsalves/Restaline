@@ -5,9 +5,9 @@ importScripts(
 );
 
 paper.install(this);
-paper.setup([640, 480]);
 
-onmessage = function ({ data: { pathJSON, options } }) {
+onmessage = function ({ data: { pathJSON, size, options } }) {
+  paper.setup(size);
   const path = paper.project.importJSON(pathJSON);
 
   let fillPaths;

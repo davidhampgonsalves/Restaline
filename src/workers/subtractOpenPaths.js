@@ -1,9 +1,9 @@
 importScripts("/node_modules/paper/dist/paper-core.js");
 
 paper.install(this);
-paper.setup([1000, 1000]);
 
-onmessage = function ({ data: { pathJSON, pathsToSubtractJSON } }) {
+onmessage = function ({ data: { pathJSON, pathsToSubtractJSON, size } }) {
+  paper.setup(size);
   const originalPath = paper.project.importJSON(pathJSON);
   let path = originalPath;
   const pathsToSubtract = pathsToSubtractJSON.map((json) =>

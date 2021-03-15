@@ -2,17 +2,17 @@ import { log } from "./utils.mjs";
 
 const PHASE = "Occulting";
 
-export default async function occult(paths, options) {
+export default async function occult(paths, size, options) {
   log(PHASE, `${paths.length} remaining.`);
   const pathsJSON = paths.map((p) => p.exportJSON());
 
-  const occultedPaths = await spawnSubtractionWorkers(paths, pathsJSON);
+  const occultedPaths = await spawnSubtractionWorkers(paths, size, pathsJSON);
 
   log(PHASE, "DONE");
   return occultedPaths;
 }
 
-async function spawnSubtractionWorkers(paths, pathsJSON) {
+async function spawnSubtractionWorkers(paths, size, pathsJSON) {
   const promises = [];
   const unfilledPaths = [];
   let progress = 0;
@@ -32,7 +32,7 @@ async function spawnSubtractionWorkers(paths, pathsJSON) {
       });
 
       const pathsToSubtractJSON = pathsJSON.slice(i + 1);
-      worker.postMessage({ pathJSON: pathsJSON[i], pathsToSubtractJSON });
+      worker.postMessage({ pathJSON: pathsJSON[i], pathsToSubtractJSON, size });
     });
     promises.push(workerPromise);
   });

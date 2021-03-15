@@ -1,7 +1,7 @@
 import { inset } from "./inset.mjs";
 import { log } from "./utils.mjs";
 
-export default async function fill(paths, options) {
+export default async function fill(paths, size, options) {
   log("Filling");
   const promises = [];
   paths
@@ -13,7 +13,7 @@ export default async function fill(paths, options) {
         const worker = new Worker(`/src/workers/fillPaths.js`);
         worker.addEventListener("message", (event) => resolve(event.data));
         worker.addEventListener("error", reject);
-        worker.postMessage({ pathJSON: path.exportJSON(), options });
+        worker.postMessage({ pathJSON: path.exportJSON(), options, size });
       });
       promises.push(workerPromise);
     });
