@@ -4,7 +4,8 @@ export default function groupByColor(paths) {
     const color = path.strokeColor.toString();
     let group = groups[color];
     if (!group) {
-      group = new paper.Layer();
+      group = new paper.Group();
+      group.name = color;
       groups[color] = group;
     }
     group.addChild(path);
