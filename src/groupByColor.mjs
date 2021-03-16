@@ -1,7 +1,7 @@
 export default function groupByColor(paths) {
   const groups = {};
   paths.forEach((path) => {
-    const color = path.strokeColor.toString();
+    const color = path.strokeColor.toCSS(true);
     let group = groups[color];
     if (!group) {
       group = new paper.Group();

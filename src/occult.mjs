@@ -14,7 +14,6 @@ export default async function occult(paths, size, options) {
 
 async function spawnSubtractionWorkers(paths, size, pathsJSON) {
   const promises = [];
-  const unfilledPaths = [];
   let progress = 0;
   paths.forEach((path, i) => {
     const workerPromise = new Promise((resolve, reject) => {

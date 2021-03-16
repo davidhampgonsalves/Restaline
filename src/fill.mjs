@@ -1,9 +1,12 @@
 import { inset } from "./inset.mjs";
 import { log } from "./utils.mjs";
 
+const PHASE = "FILLING";
+
 export default async function fill(paths, size, options) {
-  log("Filling");
+  log(PHASE, `${paths.length} remaining.`);
   const promises = [];
+  let progress = 0;
   paths
     .filter((p) => p.closed && p.hasFill()) // do not fill unclosed or unfilled paths
     .forEach((path) => {
@@ -11,7 +14,11 @@ export default async function fill(paths, size, options) {
 
       const workerPromise = new Promise((resolve, reject) => {
         const worker = new Worker(`/src/workers/fillPaths.js`);
-        worker.addEventListener("message", (event) => resolve(event.data));
+        worker.addEventListener("message", (event) => {
+          progress += 1;
+          log(PHASE, progress);
+          resolve(event.data);
+        });
         worker.addEventListener("error", reject);
         worker.postMessage({ pathJSON: path.exportJSON(), options, size });
       });
@@ -38,6 +45,6 @@ export default async function fill(paths, size, options) {
       p.fillColor = null;
     });
 
-  log("FILLING", "DONE");
+  log(PHASE, "DONE");
   return fillPaths;
 }
