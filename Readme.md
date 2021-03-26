@@ -13,6 +13,12 @@
 - order paths to avoid smugging
 - Split up final paths into groups, or files?
 
+## Gcode
+
+```
+find fish-bordered-*.svg -exec vpype read {} gwrite -p midt {}.nc \;
+```
+
 ## Development
 
 `python3 -m http.server 8000`

@@ -20,7 +20,7 @@ export async function occultAndFill(item, size, options = {}) {
 
   paths = paths.filter((p) => !p.isEmpty(true));
   paths = sortPaths(paths);
-  if (options.colorGroups) paths = groupByColor(paths);
+  if (options.colorGroups) return groupByColor(paths);
 
-  return paths;
+  return [new paper.Group(paths)];
 }

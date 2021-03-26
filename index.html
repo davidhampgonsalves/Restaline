@@ -7,6 +7,10 @@
 
     <script src="/node_modules/paper/dist/paper-core.js"></script>
     <script src="/node_modules/paperjs-offset/dist/paperjs-offset.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
 
     <style>
       body {
@@ -31,11 +35,10 @@
 
       a {
         font-family: Arial Black, Helvetica, sans-serif;
-        padding: 1em;
-        margin: 1em;
-        border-radius: 3em;
+        padding: 0.5em 0.5em 0.3em;
+        margin: 0.5em;
+        border-radius: 0.7em;
         text-decoration: none;
-        color: white;
         text-align: center;
       }
     </style>
@@ -84,30 +87,26 @@
 
               const options = {
                 fillType: "snake",
-                spacing: 1.2,
-                inset: true,
+                spacing: 2,
+                inset: false,
                 autoClosePaths: true,
-                colorGroups: true,
-                union: true,
-                occult: true,
+                colorGroups: false,
+                union: false,
+                occult: false,
               };
-              const paths = await occultAndFill(item, size, options);
+              const groups = await occultAndFill(item, size, options);
 
-              paths.forEach((p, i) => {
+              groups.forEach((p, i) => {
                 paper.project.clear();
                 paper.project.activeLayer.addChild(p);
                 const svgAsString = paper.project.exportSVG({
                   asString: true,
                 });
-                createLink(
-                  p.strokeColor.toCSS(),
-                  `${fileName}-${i + 1}.svg`,
-                  svgAsString
-                );
+                createLink(p, `${fileName}-${i + 1}.svg`, svgAsString);
               });
 
               paper.project.clear();
-              paper.project.activeLayer.addChildren(paths);
+              paper.project.activeLayer.addChildren(groups);
               const svgAsString = paper.project.exportSVG({ asString: true });
               mock.innerHTML = svgAsString;
             };
@@ -117,14 +116,23 @@
         );
       };
 
-      function createLink(color, name, dataString) {
+      function createLink(path, name, dataString) {
+        const c =
+          path.strokeColor || path.fillColor || new paper.Color("black");
+        const contrastColor = getContrastYIQ(c);
+
         const link = document.createElement("a");
         link.download = name;
-        link.innerText = name;
-        link.style = "background:" + color;
+        link.innerHTML = "<span class=material-icons>file_download</span>";
+        link.style = `background: ${c.toCSS(true)}; color: ${contrastColor}`;
         link.href =
           "data:image/svg+xml;charset=utf-8," + encodeURIComponent(dataString);
         document.querySelector("#container").appendChild(link);
+      }
+
+      function getContrastYIQ(c) {
+        const yiq = (c.red * 299 + c.green * 587 + c.blue * 114) / 1000;
+        return yiq >= 128 ? "black" : "white";
       }
     </script>
   </head>
