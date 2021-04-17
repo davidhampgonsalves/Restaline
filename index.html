@@ -71,7 +71,7 @@
               const canvasContainer = document.querySelector(
                 "#canvas-container"
               );
-              const size = svg.getBBox();
+              const size = svg.viewBox.baseVal;
               const canvas = document.querySelector("canvas");
               canvas.width = document.body.clientWidth;
               canvas.height = `${
@@ -87,12 +87,12 @@
 
               const options = {
                 fillType: "snake",
-                spacing: 2,
-                inset: false,
+                spacing: 4,
+                inset: true,
                 autoClosePaths: true,
-                colorGroups: false,
+                colorGroups: true,
                 union: false,
-                occult: false,
+                occult: true,
               };
               const groups = await occultAndFill(item, size, options);
 
