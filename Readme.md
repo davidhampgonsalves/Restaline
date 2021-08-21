@@ -1,4 +1,5 @@
 # Restaline - SVG fills for pen plotters
+https://www.davidhampgonsalves.com/Restaline/
 
 <img src="https://github.com/davidhampgonsalves/Restaline/raw/main/example.png" />
 
@@ -8,7 +9,6 @@
 - fill using fixed angle
 - order paths to avoid smugging
 - Split up final paths into groups, or files?
-- host on github pages
 
 # Bugs
 
