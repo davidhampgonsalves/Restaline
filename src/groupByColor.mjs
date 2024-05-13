@@ -1,6 +1,8 @@
 export default function groupByColor(paths) {
   const groups = {};
   paths.forEach((path) => {
+    if (!path.strokeColor && !path.fillColor) return;
+
     const color = (path.strokeColor || path.fillColor).toCSS(true);
     let group = groups[color];
     if (!group) {
